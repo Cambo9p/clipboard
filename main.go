@@ -1,8 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/cambo9p/clipboard/clipboard"
+)
 
 
 func main() {
-    fmt.Printf("hello")
+    s, err := clipboard.GetCurrentClipboard()
+    if err != nil {
+        fmt.Printf("something went wrong")
+    }
+
+    fmt.Printf(fmt.Sprintf("the clipboard is %s", s))
 }
