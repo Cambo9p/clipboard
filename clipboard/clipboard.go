@@ -20,11 +20,14 @@ func (ch clipboardHistory) getcurrentclipboard() string {
 // inserts the new string into the newest pos and cascade down
 func (ch *clipboardHistory) insertNewestClipboard(string newClipboard)  {
     oldslice := ch.history
+    fmt.Printf(fmt.Sprintf("the old slice was %v", ))
+
 
     // cascade the elements down one and copy the newest into the zero slice
     newSlice := make([]string, clipboardSize, clipboardSize)
     copy(newSlice[1:], oldslice[:len(oldslice)-1])
     newSlice[0] = value
+
 }
 
 
