@@ -8,21 +8,26 @@ import (
 
 const clipboardSize = 10
 
+type ClipboardHistory interface {
+    PollClipboardHistory()
+}
+
 // the most recent clipboard should be in the 0 spot 
-type clipboardHistory struct {
+type clipboardHistoryImpl struct {
     history []string
 }
-func InitClipboard() *clipboardHistory {
-    return &clipboardHistory {
+
+func InitClipboard() ClipboardHistory {
+    return &clipboardHistoryImpl {
         history: make([]string, 50, 50),
     }
 }
 
-func (ch clipboardHistory) currentNewestclipboard() string {
+func (ch clipboardHistoryImpl) currentNewestclipboard() string {
     return ch.history[0]
 }
 
-func (ch *clipboardHistory) UpdateClipboard()  {
+func (ch *clipboardHistoryImpl) UpdateClipboard()  {
     fmt.Printf("updating clipboard\n")
     nch, err := GetCurrentClipboard() 
     if err != nil {
@@ -33,7 +38,7 @@ func (ch *clipboardHistory) UpdateClipboard()  {
 }
 
 // inserts the new string into the newest pos and cascade down
-func (ch *clipboardHistory) insertNewestClipboard(newClipboard string)  {
+func (ch *clipboardHistoryImpl) insertNewestClipboard(newClipboard string)  {
     oldslice := ch.history
     fmt.Printf(fmt.Sprintf("the old slice was %v\n", oldslice))
 
@@ -46,7 +51,7 @@ func (ch *clipboardHistory) insertNewestClipboard(newClipboard string)  {
     ch.history = newSlice
 }
 
-func (ch* clipboardHistory) HasChanged() bool {
+func (ch* clipboardHistoryImpl) HasChanged() bool {
     newClipboard, err := GetCurrentClipboard()
     if err != nil {
         return false
@@ -69,7 +74,7 @@ func GetCurrentClipboard() (string, error) {
     return strings.TrimSpace(string(out)), nil
 }
 
-func ClipboardChanged(clipboard *clipboardHistory) bool  {
+func ClipboardChanged(clipboard *clipboardHistoryImpl) bool  {
     newClipboard, err := GetCurrentClipboard()
     if err != nil {
         return false
@@ -83,10 +88,8 @@ func ClipboardChanged(clipboard *clipboardHistory) bool  {
 }
 
 // main entrypoint
-func PollClipboard() {
+func (ch clipboardHistoryImpl) PollClipboardHistory() {
     fmt.Printf("polling clipboard")
-
-    ch := InitClipboard()
 
     for {
         if ch.HasChanged() {
